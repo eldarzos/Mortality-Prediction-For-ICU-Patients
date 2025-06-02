@@ -221,7 +221,7 @@ def quantize_events(root_dir, t_hours, n_bins, seed):
 
 if __name__ == '__main__':
 
-
-    quantize_events("/sise/robertmo-group/Eldar/projects/mortality_prediction_denis_project/final_data", 48, 20, 0)
+    # data_dir = 
+    quantize_events(data_dir, 48, 20, 0)
     print("Event quantization and token mapping complete.")
 
