@@ -182,5 +182,6 @@ def main(subjects_root_path):
 
 
 if __name__ == "__main__":
-    main("/sise/robertmo-group/Eldar/projects/mortality_prediction_denis_project/final_data")
+    # data_dir = 
+    main()
     print("Event validation complete.")
