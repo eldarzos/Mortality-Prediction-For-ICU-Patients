@@ -130,5 +130,5 @@ def subject2episode(root_path):
 
 if __name__ == '__main__':
 
-
-    subject2episode("/sise/robertmo-group/Eldar/projects/mortality_prediction_denis_project/final_data")
+    # data_dir = 
+    subject2episode(data_dir)
