@@ -124,4 +124,5 @@ if __name__ == '__main__':
 
 
     print(f"Starting truncation process for t_hours = {48}...")
-    truncate_timeseries("/sise/robertmo-group/Eldar/projects/mortality_prediction_denis_project/final_data", t_hours=48)
+    # data_dir = 
+    truncate_timeseries(data_dir, t_hours=48)
