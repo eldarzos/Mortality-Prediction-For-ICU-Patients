@@ -43,7 +43,7 @@ The project follows a multi-step pipeline to process the raw MIMIC-III data and 
     * Logs results and saves trained models.
 
 3.  **Token and Label Interpretation (`2_create_token_label_csv.ipynb`):**
-    * This notebook likely loads the `token2index.npy` map and the MIMIC dictionary files (`D_ITEMS.csv`, `D_LABITEMS.csv`).
+    * This notebook loads the `token2index.npy` map and the MIMIC dictionary files (`D_ITEMS.csv`, `D_LABITEMS.csv`).
     * It generates a CSV file that maps each token string (and its integer index) to its clinical meaning (ITEMID label), its type (e.g., binned continuous, discrete), and its value range (if binned) or possible discrete values. This is crucial for interpreting model inputs and outputs.
 
 4.  **Demo/Visualization (`3_create_demo.ipynb`):**
@@ -111,9 +111,6 @@ The primary evaluation metric is the Area Under the Receiver Operating Character
 * Extend prediction to other outcomes (e.g., Length of Stay, specific complications).
 * Develop a more user-friendly interface for the demo.
 
-## Contributing
-
-(Add guidelines if you plan to have collaborators)
 
 ## License
 
