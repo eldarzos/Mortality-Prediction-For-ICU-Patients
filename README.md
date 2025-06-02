@@ -81,7 +81,6 @@ The project follows a multi-step pipeline to process the raw MIMIC-III data and 
     python scripts/7_quantize_events.py /path/to/output_data_step1 -t 48 -n 20 -s 0
     python scripts/8_create_arrays.py /path/to/output_data_step1 -t 48 -n 20 -s 0
     ```
-    *(Adjust arguments and output/input paths as per your setup. Consider using a master script or Snakemake/Nextflow for managing the pipeline.)*
 
 2.  **Run Model Training:** Open and run the cells in `1_model_training_and_eval.ipynb`. Configure hyperparameters as needed.
 3.  **Generate Token-Label Map:** Run `2_create_token_label_csv.ipynb` to create the interpretable token map.
@@ -100,7 +99,9 @@ The core model consists of:
 
 The primary evaluation metric is the Area Under the Receiver Operating Characteristic Curve (AUROC). The project aims to achieve high AUROC on the test set, demonstrating good discrimination between patients who will survive and those who will not. Dynamic hourly predictions allow for tracking risk over time.
 
-*(You can add a section here with your best model's AUROC and key findings once you have them, or link to a results summary file/notebook).*
+![MortalityLSTM_GridSearch_t48_lr0 0005_z64_h256_p0 1_wFalse_dTrue_seed0_hourly_auroc_with_baselines](https://github.com/user-attachments/assets/9e811452-95ac-4289-a386-5651239e9b92)
+
+
 
 ## Future Work / TODO
 
