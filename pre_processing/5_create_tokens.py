@@ -120,7 +120,7 @@ def generate_value_dict(root_dir, t_hours, seed):
 
 
 if __name__ == '__main__':
-
-    generate_value_dict("/sise/robertmo-group/Eldar/projects/mortality_prediction_denis_project/final_data", 48, 0)
+    # data_dir = 
+    generate_value_dict(data_dir, 48, 0)
     print("Value dictionary generation complete.")
 
