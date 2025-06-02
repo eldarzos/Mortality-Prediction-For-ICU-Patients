@@ -1,0 +1,10 @@
+# Core numerical and data manipulation libraries
+numpy
+pandas
+
+# Machine Learning and Utilities
+scikit-learn  # Used for train_test_split and metrics (e.g., roc_auc_score)
+torch         # PyTorch for deep learning model, training, etc.
+
+# Utility for progress bars
+tqdm
