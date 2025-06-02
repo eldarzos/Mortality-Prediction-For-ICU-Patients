@@ -169,6 +169,6 @@ def create_arrays(root_dir, t_hours, n_bins, seed, max_len=10000):
 
 
 if __name__ == '__main__':
-
-    create_arrays("/sise/robertmo-group/Eldar/projects/mortality_prediction_denis_project/final_data", 48, 20, 0, 10000)
+    # data_dir = 
+    create_arrays(data_dir, 48, 20, 0, 10000)
     print("Array creation complete.")
