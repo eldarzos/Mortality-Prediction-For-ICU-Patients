@@ -57,7 +57,7 @@ The project follows a multi-step pipeline to process the raw MIMIC-III data and 
 
 1.  **Clone the repository:**
     ```bash
-    git clone [<your-repo-url>](https://github.com/eldarzos/Mortality-Prediction-For-ICU-Patients.git)
+    git clone https://github.com/eldarzos/Mortality-Prediction-For-ICU-Patients.git
     cd Mortality-Prediction-For-ICU-Patients
     ```
 2.  **Download MIMIC-III:** Obtain access to MIMIC-III v1.4 from PhysioNet and download the CSV files to a local directory (e.g., `/path/to/mimic-iii-clinical-database-1.4/`).
