@@ -132,8 +132,9 @@ def split_train_test(root_dir, t_hours, seed, test_size=0.1, valid_size=1000):
 
 
 if __name__ == '__main__':
+    # data_dir = 
 
 
-    split_train_test("/sise/robertmo-group/Eldar/projects/mortality_prediction_denis_project/final_data", 48, 0, 0.2, 10000)
+    split_train_test(data_dir, 48, 0, 0.2, 10000)
     print("Data splitting complete.")
 
