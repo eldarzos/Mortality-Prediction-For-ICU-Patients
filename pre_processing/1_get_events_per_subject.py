@@ -235,9 +235,9 @@ def extract_subject_data(mimic3_path, output_path, event_tables):
 # Cell 4: Run Extraction within Jupyter
 if __name__ == "__main__" : # Detect if running in Jupyter/IPython
 
-    mimic3_path = "/sise/robertmo-group/Eldar/projects/mimic_preprocessing/MIMIC3_data/mimic-1.4"
-    output_path = "/sise/robertmo-group/Eldar/projects/mortality_prediction_denis_project/test_debug"
-    event_tables = ['CHARTEVENTS', 'LABEVENTS', 'OUTPUTEVENTS']
+    # mimic3_path = 
+    # output_path = 
+    # event_tables = ['CHARTEVENTS', 'LABEVENTS', 'OUTPUTEVENTS']
 
 
     extract_subject_data(mimic3_path,output_path,event_tables) # Pass debug ID to function
