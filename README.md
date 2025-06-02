@@ -21,6 +21,8 @@ The input features for the model are derived from the first 48 hours of each pat
 
 ## Pipeline Overview
 
+We used python 3.12 for this project.
+
 The project follows a multi-step pipeline to process the raw MIMIC-III data and train the prediction model:
 
 1.  **Preprocessing (Scripts `1_` to `8_`):**
