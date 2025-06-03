@@ -1,57 +1,100 @@
 # ICU Mortality Prediction using MIMIC-III
 
-This project aims to predict in-hospital mortality for ICU patients using data from the MIMIC-III clinical database. The model leverages the first 48 hours of a patient's ICU stay, processing time-series data (vital signs, lab results, output events) through an LSTM-based neural network.
+This project predicts **in-hospital mortality** for ICU patients using the MIMIC-III clinical database.  
+The model ingests the **first 48 hours** of each ICU stay—vital signs, labs, and outputs—and feeds them to an **LSTM-based neural network** that yields an **hourly risk trajectory**.
+
+---
 
 ## Project Goal
 
-To develop a dynamic, interpretable model that can predict the probability of in-hospital mortality for ICU patients on an hourly basis, utilizing the rich, raw event data available in Electronic Health Records (EHRs) without manual feature engineering. The goal is to provide a tool that could potentially aid in clinical decision-making and resource allocation.
+Develop a dynamic, interpretable model that updates a patient’s mortality probability **hour-by-hour**, using raw EHR event streams and **no manual feature engineering**, so clinicians can make earlier, data-driven decisions.
+
+---
 
 ## Features
 
-* **Full EHR Utilization:** Processes a wide range of charted events, lab results, and output events.
-* **Dynamic Risk Tracking:** The model is designed to output a mortality probability for each hour of the input window (first 48 hours).
-* **Data-Driven Tokenization:** Continuous variables are binned using percentile-based quantization derived from the training data, and discrete variables are tokenized directly.
-* **LSTM-based Model:** Utilizes Long Short-Term Memory networks to capture temporal patterns in patient data.
+* **Full EHR Utilisation** – charted events, labs, outputs, everything.
+* **Dynamic Risk Tracking** – probability every hour for the first 48 h.
+* **Data-Driven Tokenisation** – continuous variables binned by percentiles; discrete ones tokenised directly.
+* **LSTM Backbone** – captures temporal dependencies without handcrafted features.
+
+---
 
 ## Dataset
 
-This project uses the [MIMIC-III (Medical Information Mart for Intensive Care III) v1.4 database](https://physionet.org/content/mimiciii/1.4/). Access to MIMIC-III is required and must be obtained through PhysioNet.
+* **Source:** [MIMIC-III v1.4](https://physionet.org/content/mimiciii/1.4/)  
+* **Window:** first 48 h of ICU stay (configurable)
 
-The input features for the model are derived from the first 48 hours of each patient's ICU stay.
+> **Access note:** You must request MIMIC-III access via PhysioNet and accept the **PhysioNet Credentialed Health Data License**. The raw data are **not** included in this repo.
 
-## Pipeline Overview
+---
 
-We used python 3.12 for this project.
+## Pipeline Overview 🚦
 
-The project follows a multi-step pipeline to process the raw MIMIC-III data and train the prediction model:
+> **Python 3.12** is required.
 
-1.  **Preprocessing (Scripts `1_` to `8_`):**
-    * `1_subject_events.py`: Extracts per-subject `stays.csv` (filtered ICU stay information) and `events.csv` (raw time-series events like CHARTEVENTS, LABEVENTS, OUTPUTEVENTS) from the MIMIC-III CSVs.
-    * `2_validate_events.py`: Cleans `events.csv` by ensuring events can be linked to valid hospital admissions and ICU stays from `stays.csv`.
-    * `3_subject2episode.py`: Segments data into individual episodes (stays). Creates `episode{i}.csv` (static data like LOS, Age, Mortality label) and `episode{i}_timeseries.csv` (events time-aligned to ICU admission).
-    * `4_truncate_timeseries.py`: Truncates the `episode{i}_timeseries.csv` files to the first 48 hours of events and creates a combined `ITEMID_UOM` identifier. Output: `episode{i}_timeseries_48.csv`.
-    * `5_split_train_test.py`: Splits the processed stays (based on paths to the 48-hour timeseries files) into training, validation, and test sets, stratified by the mortality label.
-    * `6_generate_value_dict.py`: Analyzes the training set's 48-hour timeseries files to create a dictionary (`{t_hours}-{seed}-values.npy`) characterizing all observed `ITEMID_UOM` values (discrete vs. continuous distributions).
-    * `7_quantize_events.py`: Uses the value dictionary to quantize continuous variables (into bins) and tokenize discrete variables. Overwrites the `episode{i}_timeseries_48.csv` files with these tokenized representations. Saves a token-to-index mapping (`{t_hours}_{seed}_{n_bins}-token2index.npy`).
-    * `8_create_arrays.py`: Reads the tokenized timeseries files and the token map, converts tokens to integer indices, pads/truncates sequences to a fixed length, and saves the final `X` (input sequences), `Y` (mortality labels), and `paths` arrays into an `.npz` file for model training.
+Eight scripts in `pre_processing_scripts/` convert the MIMIC-III CSVs into model-ready NumPy arrays:
 
-2.  **Model Training and Evaluation (`1_model_training_and_eval.ipynb`):**
-    * Loads the preprocessed data arrays and token map.
-    * Defines the LSTM-based model architecture (Embedder -> LSTM -> Decoder).
-    * Includes a hyperparameter grid search loop.
-    * Trains the model for each hyperparameter combination.
-    * Evaluates on a validation set (using AUROC) for early stopping and model selection.
-    * Evaluates the best model on the test set.
-    * Logs results and saves trained models.
+| Step | Script | Purpose | Key outputs |
+|------|--------|---------|-------------|
+| **1** | `1_subject_events.py` | Build cohort, dump raw events & stays **per subject** | `<DATA_ROOT>/<SUBJECT_ID>/stays.csv`<br>`events.csv` |
+| **2** | `2_validate_events.py` | Ensure every event maps to a single ICU stay | Cleaned `events.csv` |
+| **3** | `3_subject2episode.py` | Split each stay into episodes:<br>• `episode<i>.csv` (static)<br>• `episode<i>_timeseries.csv` (aligned events) | Episode files |
+| **4** | `4_truncate_timeseries.py` | Keep first 48 h (or `--t_hours`) and combine `ITEMID_UOM` | `episode<i>_timeseries_48.csv` |
+| **5** | `5_split_train_test.py` | Stratified **train / valid / test** split | `splits/*.csv` |
+| **6** | `6_generate_value_dict.py` | Decide continuous vs discrete per variable, save raw values | `dictionaries/<t>-values.npy` |
+| **7** | `7_quantize_events.py` | Bin continuous vars, tokenise all events, build vocab | Tokenised timeseries + `token2index.npy` |
+| **8** | `8_create_arrays.py` | Convert token strings to padded index sequences, save `.npz` | `arrays/<t>_<bins>-arrays.npz` |
 
-3.  **Token and Label Interpretation (`2_create_token_label_csv.ipynb`):**
-    * This notebook loads the `token2index.npy` map and the MIMIC dictionary files (`D_ITEMS.csv`, `D_LABITEMS.csv`).
-    * It generates a CSV file that maps each token string (and its integer index) to its clinical meaning (ITEMID label), its type (e.g., binned continuous, discrete), and its value range (if binned) or possible discrete values. This is crucial for interpreting model inputs and outputs.
+---
 
-4.  **Demo/Visualization (`3_create_demo.ipynb`):**
-    * Loads a trained model and the processed test data.
-    * Selects example patients (e.g., True Positive, False Positive, etc.).
-    * Runs predictions for these patients and displays the sequence of events alongside the model's hourly mortality probability. This helps in understanding model behavior for specific cases.
+## Running the Pipeline ⚙️
+
+```bash
+# ---- User paths ----
+MIMIC_PATH=/path/to/mimic-iii-clinical-database-1.4
+DATA_ROOT=/path/to/output_root
+SEED=0
+T_HOURS=48
+N_BINS=20
+
+# 1) Extract raw events + stays
+python pre_processing_scripts/1_subject_events.py \
+    --mimic3_path "$MIMIC_PATH" \
+    --output_path "$DATA_ROOT" \
+    --events CHARTEVENTS LABEVENTS OUTPUTEVENTS
+
+# 2) Validate events
+python pre_processing_scripts/2_validate_events.py \
+    --subjects_root_path "$DATA_ROOT"
+
+# 3) Build episodes
+python pre_processing_scripts/3_subject2episode.py \
+    --root_path "$DATA_ROOT"
+
+# 4) Truncate to first 48 h
+python pre_processing_scripts/4_truncate_timeseries.py \
+    --root_dir "$DATA_ROOT" --t_hours $T_HOURS
+
+# 5) Train / valid / test split
+python pre_processing_scripts/5_split_train_test.py \
+    --root_dir "$DATA_ROOT" --t_hours $T_HOURS --seed $SEED \
+    --test_size 0.2 --valid_size 1000
+
+# 6) Generate value dictionary
+python pre_processing_scripts/6_generate_value_dict.py \
+    --root_dir "$DATA_ROOT" --t_hours $T_HOURS --seed $SEED
+
+# 7) Quantise + tokenise
+python pre_processing_scripts/7_quantize_events.py \
+    --root_dir "$DATA_ROOT" --t_hours $T_HOURS \
+    --n_bins $N_BINS --seed $SEED
+
+# 8) Create final arrays
+python pre_processing_scripts/8_create_arrays.py \
+    --root_dir "$DATA_ROOT" --t_hours $T_HOURS \
+    --n_bins $N_BINS --seed $SEED --max_len 10000
+
 
 ## Setup
 
